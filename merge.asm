@@ -23,7 +23,7 @@ merge:
 
     add $t2, $a0, $t2   # & subvet1[i]
     add $t3, $a0, $t3   # & subvet2[j]
-loop:
+intercala:
     bge $t0, $a2, terminaDireita  # quando subvet1 termina, completa com o subvet2
     bge $t1, $a3, terminaEsquerda # e vice e versa
 
@@ -38,7 +38,7 @@ loop:
     addi $t1, $t1, 1 # j++
     addi $t3, $t3, 4
 
-    j loop
+    j intercala
 
 trocaEsquerda:
     sw $t6, 0($t5)
@@ -46,7 +46,7 @@ trocaEsquerda:
     addi $t0, $t0, 1 # i++
     addi $t2, $t2, 4
 
-    j loop
+    j intercala
 
 
 
@@ -76,13 +76,15 @@ terminaDireita:
 
     j terminaDireita
 
+
 fim:
     move $t0, $a1  # i = inicio
     #move $t1, $a0
     move $t2, $s0
 
-copiaVetor:
-    bge $t0, $a3, desempilha   # if (i < fim) then copiaVetor
+
+loop:
+    bge $t0, $a3, desempilha   # if (i < fim) then loop
 
     li $t4, 4
     mul $t4, $t0, $t4
@@ -95,11 +97,10 @@ copiaVetor:
 
     addi $t0, $t0, 1 #i++
 
-    j copiaVetor
+    j loop
+
 
 desempilha:
-
-
     lw $s0, 28($sp)
     lw $s1, 24($sp)
     lw $s2, 20($sp)
