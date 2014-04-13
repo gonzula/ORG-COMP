@@ -3,7 +3,6 @@
     .align 0
 ORDENADO:    .asciiz "    ordenado:"
 NAOORDENADO: .asciiz "nao-ordenado:"
-ERRO: .asciiz "ERRO"
 
     .align 2
 VETOR:       .word   36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
@@ -16,14 +15,29 @@ main:
 
     la $a0, VETOR ## $a0 = &vetor[0]
     li $a1, 0     ## $a1 = inicio
-    li $a3, 16   ## $a3 = final + 1
+    li $a3, 16    ## $a3 = final + 1
 
     jal mergeSort #retorna em $v0 o vetor ordenado
+    beqz $v0, exit  #se deu erro ($v0 == 0) exit
+
     addi $sp, $sp, -16
     sw $v0, 12($sp)  #salva o $v0
     sw $a0, 8($sp)
     sw $a1, 4($sp)
     sw $a3, 0($sp)
+
+    li $v0, 4
+    la $a0, ORDENADO
+    syscall
+
+    lw $a0, 12($sp)  #volta valor de $v0 em $a0
+    lw $a1, 4($sp)
+    lw $a3, 0($sp)
+
+
+    sub $a3, $a3, $a1  #fim
+    li $a1, 0          #inicio
+    jal printVetor
 
     li $v0, 4
     la $a0, NAOORDENADO
@@ -32,22 +46,8 @@ main:
     lw $a0, 8($sp)
     lw $a1, 4($sp)
     lw $a3, 0($sp)
-    jal printVetor #recebe em $a0 o vetor original
-
-    li $v0, 4
-    la $a0, ORDENADO
-    syscall
-
-
-    lw $a0, 12($sp)  #volta valor de $v0 em $a0
-    lw $a1, 4($sp)
-    lw $a3, 0($sp)
     addi $sp, $sp, 16
-
-    sub $a3, $a3, $a1  #fim
-    li $a1, 0          #inicio
-
-    jal printVetor
+    jal printVetor #recebe em $a0 o vetor original
 
 
 exit:
@@ -58,9 +58,9 @@ exit:
 mergeSort:
     sub $t0, $a3, $a1   #
     li $t1, 16          #
-    bgt $t0, $t1, exit  # se tamaho > 16 entao exit
+    bgt $t0, $t1, erroDetectado  # se tamaho > 16 entao exit
     li $t1, 1           #
-    blt $t0, $t1, exit  # se tamanho < 1 entao exit
+    blt $t0, $t1, erroDetectado  # se tamanho < 1 entao exit
 
     addi $sp, $sp, 20
     sw $s0, 16($sp)
@@ -105,6 +105,10 @@ mergeSort:
     lw $ra, 0($sp)
     addi $sp, $sp, 20
 
+    jr $ra
+
+erroDetectado:
+    li $v0, 0
     jr $ra
 
 mergeSortRecursao:
