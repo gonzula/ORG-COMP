@@ -16,7 +16,7 @@ main:
 
     la $a0, VETOR ## $a0 = &vetor[0]
     li $a1, 0     ## $a1 = inicio
-    li $a3, 37    ## $a3 = final + 1
+    li $a3, 16   ## $a3 = final + 1
 
     jal mergeSort #retorna em $v0 o vetor ordenado
     addi $sp, $sp, -16
@@ -49,17 +49,26 @@ main:
 
     jal printVetor
 
+
+exit:
     li $v0, 10   #
     syscall      # exit
 
 
 mergeSort:
+    sub $t0, $a3, $a1   #
+    li $t1, 16          #
+    bgt $t0, $t1, exit  # se tamaho > 16 entao exit
+    li $t1, 1           #
+    blt $t0, $t1, exit  # se tamanho < 1 entao exit
+
     addi $sp, $sp, 20
     sw $s0, 16($sp)
     sw $a0, 12($sp)
     sw $a1, 8($sp)
     sw $a3, 4($sp)
     sw $ra, 0($sp)
+
 
     jal copiaVetor
 
@@ -68,9 +77,9 @@ mergeSort:
     li $a1, 0   #inicio
 
     addi $sp, $sp, -12 #
-    sw $a0, 8($sp)     #salva valor de $a0
-    sw $a1, 4($sp)     #salva valor de $a1
-    sw $a3, 0($sp)     #salva valor de $a3
+    sw $a0, 8($sp)     # salva valor de $a0
+    sw $a1, 4($sp)     # salva valor de $a1
+    sw $a3, 0($sp)     # salva valor de $a3
 
     li $v0, 9         #  sbrk
     sub $a0, $a3, $a1 # aloca um vetor auxiliar
