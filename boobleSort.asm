@@ -4,54 +4,59 @@
 
 bubbleSort:
     # $a0 = endereco
-    # $a1 = tamanho
+    # $a1 = inicio
+    # $a3 = fim
 
     # $t2 = aux
     # $t3 = i
     # $t4 = j
 
-    addi $sp, $sp, -12
-    sw $a0, 0($sp)
-    sw $a1, 4($sp)
-    sw $ra, 8($sp)
+    addi $sp, $sp, -8 #
+    sw $a0, 0($sp)    # salvando contexto
+    sw $a1, 4($sp)    #
 
-    beq $a1, $zero, desempilha
+    li $t0, 4
+    mul $t0, $a1, $t0
+    add $a0, $a0, $t0  # &vetor[inicio]
+    sub $a1, $a3, $a1  # tamanho = fim - inicio
 
-    move $t0, $a0
+    blez $a1, desempilha  # se vetor vazio...
 
+    move $t5, $a0
 
-    move $a0, $t0
-
-    li $t3, -1
+    li $t3, 0
 loopExterno:
-    li $t4, 1
-    lw $a0, 0($sp)
+    bge $t3, $a1, desempilha
+
+    li $t4, 1       # j = 1
+    move $a0, $t5   # volta o ponteiro para o inicio do vetor
+    j loopInterno
 
 
-    addi $t3, $t3, 1
-    blt $t3, $a1 loopInterno
-
-
-    bgt $t3, $a1, desempilha
 
 loopInterno:
-    bge $t4, $a1, loopExterno
-    lw $t0, 0($a0)  # vetor[j]
-    lw $t1, 4($a0)  # vetor[j+1]
+    bge $t4, $a1, fimLoopExterno
+    lw $t0, 0($a0)  # vetor[j-1]
+    lw $t1, 4($a0)  # vetor[j]
 
     addi $a0, $a0, 4  #
-    addi $t4, $t4, 1  #j++
-    blt $t0, $t1, loopInterno
+    addi $t4, $t4, 1  # j++
+    ble $t0, $t1, loopInterno  # vetor[j-1] <= vetor[j], nao troca
+                               # else, troca
 
     sw $t0, 0($a0)   #
     sw $t1, -4($a0)  #swap
 
     j loopInterno
 
+fimLoopExterno:
+    addi $t3, $t3, 1
+    j loopExterno
+
+
 desempilha:
     lw $a0, 0($sp)
     lw $a1, 4($sp)
-    lw $ra, 8($sp)
-    addi $sp, $sp, 12
+    addi $sp, $sp, 8
 
     jr $ra

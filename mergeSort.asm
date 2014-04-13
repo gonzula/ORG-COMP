@@ -1,6 +1,6 @@
     .data
     .align 2
-VETOR:       .word   51, 38, 41, 20, 44, 43, 31, 39, 53, 52, 27, 42, 33, 46, 37, 22, 26, 49, 35, 28, 30, 50, 32, 36, 55, 25, 24, 56, 23, 40, 29, 21, 48, 45, 34, 47, 54
+VETOR:       .word   36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 
     .text
     .align 2
@@ -9,23 +9,23 @@ VETOR:       .word   51, 38, 41, 20, 44, 43, 31, 39, 53, 52, 27, 42, 33, 46, 37,
 main:
 
     la $a0, VETOR ## $a0 = &vetor[0]
-    li $a1, 0     ## $a1 = inicio
-    li $a3, 37    ## $a3 = tamanho
+    li $a1, 10     ## $a1 = inicio
+    li $a3, 30    ## $a3 = tamanho
 
     move $t0, $a0
 
     li $v0, 9         #
-    move $a0, $a3     # aloca um vetor auxiliar
+    sub $a0, $a3, $a1 # aloca um vetor auxiliar
     li $t1, 4         # usado no merge
     mul $a0, $a0, $t1 #
     syscall           #
 
-    move $s0, $v0
+    move $s0, $v0     # $s0, variavel
     move $a0, $t0
 
     jal mergeSort
 
-    move $a1, $a3
+
 
     jal printVetor
 
@@ -34,6 +34,30 @@ main:
 
 
 mergeSort:
+    addi $sp, $sp, 8
+    sw $a0, 4($sp)
+    sw $ra, 0($sp)
+
+
+    move $t0, $a0
+
+    #li $v0, 9         #
+    #sub $a0, $a3, $a1 # aloca o vetor que recebera a oredenacao
+    #li $t1, 4         #
+    #mul $a0, $a0, $t1 #
+    #syscall           #
+
+    move $a0, $t0
+
+
+
+    jal mergeSortRecursao
+
+    lw $a0, 4($sp)
+    lw $ra, 0($sp)
+    addi $sp, $sp, -8
+
+mergeSortRecursao:
     addi $sp, $sp, -28
     sw $s1, 24($sp)
     sw $s2, 20($sp)
@@ -56,14 +80,14 @@ mergeSort:
 
     move $a3, $a2
     #                  #a0    #a1    #a3
-    jal mergeSort  # (vetor*, inicio, meio)
+    jal mergeSortRecursao  # (vetor*, inicio, meio)
 
     move $a3, $s1   #manter valor do fim
 
     move $s1, $a1
     move $a1, $a2
     #                  #a0    #a1     #a3
-    jal mergeSort  # (vetor*,meio + 1, fim)
+    jal mergeSortRecursao  # (vetor*,meio + 1, fim)
     move $a1, $s1
 
 
@@ -83,25 +107,12 @@ desempilha:
     jr $ra
 
 ajustaBubble:
-    addi $sp, $sp, -16
-    sw $a0, 12($sp) #vetor
-    sw $a3, 8($sp) #fim
-    sw $a1, 4($sp) #inicio
+    addi $sp, $sp, -8
     sw $ra, 0($sp)
-
-    li $t0, 4
-    mul $t0, $a1, $t0
-    add $a0, $a0, $t0 # &vetor[inicio]
-
-    sub $a1, $a3, $a1 # fim - inicio = tamanho
 
     jal bubbleSort
 
-    #jal printVetor
-
-    lw $a0, 12($sp) #inicio
-    lw $a3, 8($sp) #tamanho
-    lw $a1, 4($sp) #meio
     lw $ra, 0($sp)
-    addi $sp, $sp, 16
+    addi $sp, $sp, 8
+
     jr $ra

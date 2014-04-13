@@ -9,6 +9,15 @@ STRORDENADO: .asciiz "O vetor ordenado eh:\n"
     .globl printVetor
 
 printVetor:
+    addi $sp, $sp, -8
+    sw $a0, 4($sp)
+    sw $a1, 0($sp)
+
+    li $t0, 4
+    mul $t1, $a1, $t0
+    add $a0, $a0, $t1
+    sub $a1, $a3, $a1
+
     move $t0, $a0  # endereco
     move $t1, $a1  # tamanho
 
@@ -27,11 +36,19 @@ loop:
 
     bgtz $t1, loop
 
-    jr $ra
+    j desempilha
 
 vetorVazio:
     li $v0, 4
     la $a0, STRVETORVAZIO
     syscall
+
+    j desempilha
+
+
+desempilha:
+    lw $a0, 4($sp)
+    lw $a1, 0($sp)
+    addi $sp, $sp, 8
 
     jr $ra
