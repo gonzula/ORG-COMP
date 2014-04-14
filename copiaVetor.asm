@@ -13,7 +13,6 @@ copiaVetor:
     sw $a0, 0($sp)    # salvando contexto
     sw $a1, 4($sp)    #
 
-    move $t0, $a0
 
     li $v0, 9         #
     sub $a0, $a3, $a1 #
@@ -21,7 +20,7 @@ copiaVetor:
     mul $a0, $a0, $t1 #
     syscall           #
 
-    move $a0, $t0  #$a0 = original
+    lw $a0, 0($sp) #$a0 = original
     move $t1, $v0  #$v0 = vazio para copia
 
     li $t0, 4

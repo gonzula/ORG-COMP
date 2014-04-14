@@ -86,7 +86,7 @@ mergeSort:
     li $t1, 4         # usado no merge
     mul $a0, $a0, $t1 #
     syscall           #
-    move $s0, $v0     # $s0, variavel global
+    move $s0, $v0     #
 
 
     lw $a0, 8($sp)     #volta valor de $a0
@@ -108,8 +108,8 @@ mergeSort:
     jr $ra
 
 erroDetectado:
-    li $v0, 0
-    jr $ra
+    li $v0, 0 #
+    jr $ra    # retorna 0
 
 mergeSortRecursao:
     addi $sp, $sp, -28
@@ -131,19 +131,16 @@ mergeSortRecursao:
     div $a2, $t1, $t0  # $a2 = $a3 / 2
 
     move $a3, $a2
-    #                  #a0    #a1    #a3
+    #                          #$a0    #$a1   #$a3
     jal mergeSortRecursao  # (vetor*, inicio, meio)
 
-    move $a3, $s1   #manter valor do fim
+    move $a3, $s1   # manter valor do fim
 
     move $s1, $a1
     move $a1, $a2
-    #                  #a0    #a1     #a3
+    #                          #$a0    #$a1   #$a3
     jal mergeSortRecursao  # (vetor*,meio + 1, fim)
     move $a1, $s1
-
-
-    #la $a0, VETOR
 
     jal merge
 
